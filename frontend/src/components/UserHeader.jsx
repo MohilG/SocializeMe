@@ -26,7 +26,7 @@ const UserHeader = () => {
                 <Text fontSize={"2xl"}>Mark Zuckenberg</Text>
                 <Flex gap={2} alignItems={"center" }>
                     <Text fontSize={"sm"}>markzuck</Text>
-                    <Text fontSize={"xs"} color={"gray.light"} p={1} borderRadius={"full"} bg={"gray.dark"}>thread.net</Text>
+                    <Text fontSize={"xs"} color={"gray.light"} p={1} borderRadius={"full"} bg={"gray.dark"}>social.net</Text>
                 </Flex>
             </Box>
             <Box>
