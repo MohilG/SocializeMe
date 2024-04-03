@@ -2,10 +2,34 @@ import { Link, Box, Flex, Text, VStack, Menu, MenuButton, Portal, MenuList, Menu
 import  { Avatar } from '@chakra-ui/avatar'
 import { BsInstagram } from "react-icons/bs";
 import { CgMoreO } from "react-icons/cg";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import axios from "axios";
 
 
 // import { Link } from "react-router-dom"
 const UserHeader = () => {
+    const [user,setUser]=useState(null)
+    const {username}=useParams()
+    console.log(user);
+    useEffect(()=>{
+        const getUser=async()=>{
+            try {
+                const response=await axios.get(`http://localhost:4000/api/users/profile/${username}`)
+                setUser(response.data)
+            } catch (error) {
+                console.log(error);
+                toast({
+                    title: 'Error',
+                    description: response.data.error,
+                    // status: 'error',
+                    duration: 3000,
+                    isClosable: true
+                  }); 
+            }
+        }
+        getUser()
+    },[username])
     const toast=useToast()
     const copyUrl=()=>{
         const url=window.location.href;

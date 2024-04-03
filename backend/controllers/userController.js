@@ -1,14 +1,16 @@
     import User from "../model/userModel.js";
     import bcrypt from "bcryptjs"
     import generateTokenCookie from "../utils/helper/generateTokenCookie.js";
+    import {v2 as cloudinary} from "cloudinary"
 //  import jwt from 'jsonwebtoken'
     export const signUp = async(req,res) => {
+        // console.log(req.body);
     try {
         const {name,username,email,password} = req.body;
         const user=await User.findOne({$or:[{email},{username}]})
 
         if(user){
-    return res.status(400).json({message: 'User Already Exists !'})
+    return res.status(400).json({error: 'User Already Exists !'})
         }
 
         const salt = await bcrypt.genSalt(10);
@@ -25,50 +27,47 @@
         if(newUser){
             generateTokenCookie(newUser._id,res)
 
-        res.status(201).json({_id:newUser._id,name:newUser.name,username:newUser.username})
+        res.status(201).json({_id:newUser._id,name:newUser.name,username:newUser.username,bio:newUser.bio,profilePic:newUser.profilePic,message:"SignUp Successfull"})
         }
         else{
-        res.status(400).json({message: 'Invalid User Data !'})
+        res.status(400).json({error: 'Invalid User Data !'})
 
         }
 
     } catch (error) {
-        res.status(500).json({message: error.message})
+        res.status(500).json({error: error.message})
         console.log("Error in Sign Up", error);
     }
     }
 
     export const login = async(req,res) => {
+        // console.log("hello");
+        
         try {
         const {username,password} = req.body;
         const user=await User.findOne({username})
             const isPassword=await bcrypt.compareSync(password,user?.password || "")
 
             if(!user || !isPassword){
-                return res.status(401).json({message:'Invalid Username or Password!'});
+                return res.status(401).json({error:'Invalid Username or Password!'});
             }
             generateTokenCookie(user._id,res)
             
         
-        res.status(201).json({_id:user._id,name:user.name,username:user.username,email:user.email})
+        res.status(201).json({_id:user._id,name:user.name,username:user.username,email:user.email,bio:user.bio,profilePic:user.profilePic,message:"Login Successfull"})
         
     
         } catch (error) {
-        res.status(500).json({message: error.message})
+        res.status(500).json({error: error.message})
         console.log("Error in Login", error);
         }
     }
 
     export const logout=async(req,res)=>{
         try {
-        if (req.cookies.jwt) {
-            console.log(req.cookies);
-                 res.clearCookie("jwt");
-        } else {
-                return res.status(400).json({ message: "No active session to logout from" });
-            }
-           res.status(200).json({message:"Logged Out Successfully"})
-        } catch (error) {
+            res.cookie("jwt", "", { maxAge: 1 });
+            res.status(200).json({ message: "User logged out successfully" });
+        }  catch (error) {
             res.status(500).json({message: error.message})
             console.log("Error in Logout", error);
         }
@@ -85,8 +84,8 @@
             const { id } = req.params; // Corrected accessing params
             const curUser=await User.findById(req.user._id)
             const userToModify = await User.findById(id);
-            if (id === req.user._id.toString()) return res.status(400).json({ message: "You can't Follow/Unfollow yourself" });
-            if (!userToModify || !curUser) return res.status(400).json({ message: "User Not Found" });
+            if (id === req.user._id.toString()) return res.status(400).json({ error: "You can't Follow/Unfollow yourself" });
+            if (!userToModify || !curUser) return res.status(400).json({ error: "User Not Found" });
     
             const isFollowing = curUser.following.includes(id);
             if (isFollowing) {
@@ -102,7 +101,7 @@
             }
     
         } catch (error) {
-            res.status(500).json({ message: error.message });
+            res.status(500).json({ error: error.message });
             console.log("Error in Follow/Unfollow", error);
         }
     };
@@ -110,18 +109,27 @@
 
     export const updateUser=async(req,res)=>{
         try {
-            const {name,username,email,password,profilePic,bio}=req.body
+            const {name,username,email,password,bio}=req.body
+            let {profilePic}=req.body
             const existinguser=await User.findOne({$or:[{email:email || ""},{username:username || ""}]})
-                if(existinguser)return res.status(400).json( {message:"Username or Email already exists"} )
+            // console.log(existinguser._id+" "+req.user._id);
+                if(existinguser && existinguser._id.toString()!==req.user._id.toString())return res.status(400).json( {error:"Username or Email already exists"} )
             const user=await User.findById(req.user._id)
             if(req.params.id!==user._id.toString()){
-                return res.status(400).json({message:"You can only edit your own profile."})
+                return res.status(400).json({error:"You can only edit your own profile."})
             }
-            if(!user)return res.status(400).json({ message: "User Not Found" });
+            if(!user)return res.status(400).json({ error: "User Not Found" });
             if(password){
                 const salt=await bcrypt.genSalt(10)
                 const hashedPassword=await bcrypt.hash(password,salt)
                 user.password=hashedPassword
+            }
+            if(profilePic){
+                if(user.profilePic){
+                    await cloudinary.uploader.destroy(user.profilePic.split("/").pop().split(".")[0])
+                }
+                const uploadRes=await cloudinary.uploader.upload(profilePic)
+                profilePic=uploadRes.secure_url
             }
             user.name=name || user.name
             user.email=email || user.email
@@ -132,13 +140,13 @@
             user.following=user.following
             // user.createdAt=user.createdAt
             await  user.save()
-            res.status(200).json({message:'User  Updated Successfully'})        
-            console.log(user);
+            res.status(200).json({_id:user._id,name:user.name,username:user.username,email:user.email,bio:user.bio,profilePic:user.profilePic})        
+            // console.log(user);
 
 
 
         } catch (error) {
-            res.status(500).json({ message: error.message });
+            res.status(500).json({ error: error.message });
             console.log("Error in Updating", error);   
         }
     }
@@ -149,11 +157,11 @@ export const getUser=async(req,res)=>{
     try {
         const user=await User.findOne({username}).select("-password").select("-updatedAt")
 
-        if(!user)return res.status(400).json({message:"User Not Found"})
+        if(!user)return res.status(400).json({error:"User Not Found"})
 
         return  res.status(200).json(user)
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ error: error.message });
         console.log("Error in Getting User Profile", error);   
     }
 }
