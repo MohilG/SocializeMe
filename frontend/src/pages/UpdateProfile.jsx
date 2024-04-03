@@ -105,7 +105,7 @@ export default function UpdateProfile() {
         <FormControl  >
           <FormLabel>User name</FormLabel>
           <Input
-            defaultValue={user.username}
+            // defaultValue={user.username}
           value={inputs.username}
           onChange={(e)=>setInputs({...inputs, username: e.target.value})}
             placeholder="UserName"
@@ -126,7 +126,7 @@ export default function UpdateProfile() {
         <FormControl  >
           <FormLabel>Bio</FormLabel>
           <Input
-            defaultValue={user.bio}
+            // defaultValue={user.bio}
           value={inputs.bio}
           onChange={(e)=>setInputs({...inputs, bio: e.target.value})}
             placeholder="Bio"

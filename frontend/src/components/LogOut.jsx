@@ -25,6 +25,7 @@ const LogOut = () => {
               duration: 3000,
               isClosable: true
             });
+            window.location.href='/'
           } catch (error) {
             console.log(error);
             toast({

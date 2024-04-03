@@ -82,6 +82,7 @@
             // const curUser = await User.findById(decoded.userid).select("-password");
             
             const { id } = req.params; // Corrected accessing params
+            console.log(id);
             const curUser=await User.findById(req.user._id)
             const userToModify = await User.findById(id);
             if (id === req.user._id.toString()) return res.status(400).json({ error: "You can't Follow/Unfollow yourself" });
