@@ -6,9 +6,11 @@ import { CgMoreO } from "react-icons/cg";
 import axios from 'axios';
 import {formatDistanceToNow} from 'date-fns'
 import Actions from './Actions.jsx';
-import { useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import userAtom from '../atoms/userAtom.js';
+import postsAtom from '../atoms/postAtom.js';
 const Post = ({post}) => {
+    const [posts,setPosts]=useRecoilState(postsAtom)
     const navigate=useNavigate()
     const postedById=post.postedBy
     const curUser=useRecoilValue(userAtom)
@@ -37,6 +39,7 @@ const Post = ({post}) => {
                 duration: 3000,
                 isClosable: true
             });
+            setPosts(posts.filter((p)=>p._id!==post._id))
 
         } catch (error) {
             console.log(error);
@@ -168,7 +171,7 @@ const Post = ({post}) => {
                     <Image src={post.img}  w={"full"}/>
                 </Box>)}
                 <Flex gap={3} my={1}>
-                    <Actions post={post} />
+                    <Actions post={post}  />
                 </Flex>
             </Flex>
             </Flex>

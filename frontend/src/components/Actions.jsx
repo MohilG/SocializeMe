@@ -20,12 +20,13 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import userAtom from "../atoms/userAtom.js";
 // import postsAtom from "../atoms/postsAtom";
 import axios from "axios";
+import postsAtom from "../atoms/postAtom.js";
 
-const Actions = ({ post:post_ }) => {
+const Actions = ({ post }) => {
 	const user = useRecoilValue(userAtom);
 	const toast=useToast()
 	// const [posts, setPosts] = useRecoilState(postsAtom);
-	const [post,setPost]=useState(post_)
+	const [posts,setPosts]=useRecoilState(postsAtom)
 	const [liked, setLiked] = useState(post.likes.includes(user?._id));
 	const [isLiking, setIsLiking] = useState(false);
 	const [isReplying, setIsReplying] = useState(false);
@@ -64,11 +65,24 @@ const Actions = ({ post:post_ }) => {
 				  return
 			}
 			if(!liked){
-				setPost({...post,likes:[...post.likes,user._id]})
+				const updatedPosts=posts.map((p)=>{
+					if(p._id===post._id){
+						return {...p,likes:[...p.likes,user._id]}
+					}
+					return p
+				})
+				setPosts(updatedPosts)
 			}
 			else{
-				setPost({...post,likes:post.likes.filter(id=>id!==user._id)})
-			}
+				const updatedPosts=posts.map((p)=>{
+					if(p._id===post._id){
+						return {...p,likes:p.likes.filter((id)=>id!==user._id)}
+					}
+					return p
+				})
+				setPosts(updatedPosts)
+
+						}
 			setLiked(!liked)
 		} 
 		
@@ -110,8 +124,16 @@ const Actions = ({ post:post_ }) => {
 				  });
 				  return
 			}
-			setPost({...post,replies:[...post.replies,response.data.message.text]});
-				console.log(response.data.message.text);
+			const updatedPosts=posts.map((p)=>{
+				if(p._id===post._id){
+					return  {...p, replies:[...p.replies,response.data]}
+				}else{
+					return p
+				}
+				});
+			setPosts(updatedPosts);
+				
+			// console.log(response.data.message.text);
 				toast({
 					title: 'Success',
 					description: 'Reply Added',

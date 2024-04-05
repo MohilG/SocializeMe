@@ -13,12 +13,14 @@ import React, { useRef, useState } from 'react'
 import usePreviewImage from '../hooks/usePreviewImage'
 import { BsFillImageFill } from 'react-icons/bs'
 import axios from 'axios'
-import { useRecoilValue } from 'recoil'
+import { useRecoilState, useRecoilValue } from 'recoil'
 import userAtom from '../atoms/userAtom.js'
+import postsAtom from '../atoms/postAtom.js'
 
 const CreatePost = () => {
     const toast=useToast()
     const user=useRecoilValue(userAtom)
+    const [posts,setPosts]=useRecoilState(postsAtom)
     const {handleImg,imgUrl,setImgUrl}=usePreviewImage()
     const fileRef=useRef(null)
 
@@ -64,8 +66,10 @@ const CreatePost = () => {
               isClosable: true,
             });
           } else {
-            // Handle successful post creation
-            // For example, close the modal or show a success message
+            if(username=user.username){
+            setPosts([response.data,...posts])
+            }
+              
             onClose();
             toast({
               title: 'Success',
@@ -118,7 +122,7 @@ const CreatePost = () => {
           </ModalBody>
 
           <ModalFooter>
-            <Button colorScheme='blue' mr={3} onClick={handleCreatePost} isLoading={loading}>
+            <Button colorScheme='blue' size={{base:'sm',sm:'md'}} mr={3} onClick={handleCreatePost} isLoading={loading}>
               Post
             </Button>
           </ModalFooter>

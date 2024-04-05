@@ -6,11 +6,13 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import Post from "../components/Post.jsx";
 import useGetProfile from "../hooks/useGetProfile.js";
+import { useRecoilState } from "recoil";
+import postsAtom from "../atoms/postAtom.js";
 
 const UserPage = () => {
   const toast = useToast();
   const { username } = useParams();
-  const [posts,setPosts]=useState([])
+  const [posts,setPosts]=useRecoilState(postsAtom)
   const [fetchPost,setFetchPost]=useState(true)
   const {user,loading}=useGetProfile()
   useEffect(() => {
@@ -43,7 +45,7 @@ const UserPage = () => {
       }
     }
     getPost()
-  }, [username]);
+  }, [username,setPosts]);
 
   // console.log(user);
 
@@ -73,7 +75,7 @@ const UserPage = () => {
     )}
     {!fetchPost && posts.length!==0 && (
       posts.map((post)=>{
-        return (<Post post={post} key={post._id}/>)
+        return (<Post post={post} key={post._id} />)
         
       })
     )}

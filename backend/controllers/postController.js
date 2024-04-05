@@ -24,7 +24,7 @@ export const createPost=async(req,res)=>{
         const newPost=new Post({postedBy,title,img})
         await  newPost.save();
         
-        res.status(201).json({message:"Post created successfully",newPost})
+        res.status(201).json(newPost)
         
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -106,7 +106,7 @@ export const replyPost=async(req,res)=>{
         const reply={userId,text,userProfile,username}
     post.replies.push(reply)
     await post.save()
-    res.status(201).json({message:reply})
+    res.status(201).json(reply)
        
     } catch (error) {
         res.status(500).json({ message: error.message });

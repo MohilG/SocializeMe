@@ -1,18 +1,20 @@
 import { Button, Flex, Spinner, useToast } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { useRecoilValue } from 'recoil'
+import { useRecoilState, useRecoilValue } from 'recoil'
 import userAtom from '../atoms/userAtom.js'
 import axios from 'axios'
 import Post from '../components/Post.jsx'
+import postsAtom from '../atoms/postAtom.js'
 
 const HomePage = () => {
   const toast =useToast()
-  const [posts,setPosts]=useState([])
+  const [posts,setPosts]=useRecoilState(postsAtom)
   const [loading,setLoading]=useState(true)
   useEffect(()=>{
     const getFeed=async()=>{
       try {
+        setPosts([])
         setLoading(true)
         const response=await axios.get('http://localhost:4000/api/posts',{withCredentials: true})
         // console.log(response.data)
@@ -48,7 +50,7 @@ const HomePage = () => {
       }
     }
     getFeed()
-  },[])
+  },[setPosts])
   return (
     <>
    {loading && (
@@ -62,7 +64,7 @@ const HomePage = () => {
       </Flex>
     )}
     {posts.map((post)=>{
-      console.log(post.postedBy);
+      // console.log(post.postedBy);
       return <Post key={post._id}  post={post} />
     })}
     </>
