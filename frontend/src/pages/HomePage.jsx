@@ -19,7 +19,7 @@ const HomePage = () => {
         const response=await axios.get('http://localhost:4000/api/posts',{withCredentials: true})
         // console.log(response.data)
         setPosts(response.data)
-        console.log(posts);
+        // console.log(posts);
         if(response.data.error){
           toast({
             title: 'Error',

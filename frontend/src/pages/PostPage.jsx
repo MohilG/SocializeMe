@@ -22,9 +22,10 @@ const PostPage = () => {
 
     useEffect(() => {
         const getPost = async () => {
+            setPosts([])
             try {
                 const response = await axios.get(`http://localhost:4000/api/posts/${pid}`, { withCredentials: true });
-                console.log(response.data);
+                // console.log(response.data);
                 if (response.data.error) {
                     toast({
                         title: 'Error',
