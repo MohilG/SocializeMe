@@ -13,97 +13,127 @@ import {
 	ModalOverlay,
 	Text,
 	useDisclosure,
+	useToast,
 } from "@chakra-ui/react";
-// import { useState } from "react";
-// import { useRecoilState, useRecoilValue } from "recoil";
-// import userAtom from "../atoms/userAtom";
-// import useShowToast from "../hooks/useShowToast";
+import { useState } from "react";
+import { useRecoilState, useRecoilValue } from "recoil";
+import userAtom from "../atoms/userAtom.js";
 // import postsAtom from "../atoms/postsAtom";
+import axios from "axios";
 
-const Actions = ({ liked,setLiked }) => {
-	// const user = useRecoilValue(userAtom);
-	// const [liked, setLiked] = useState(post.likes.includes(user?._id));
+const Actions = ({ post:post_ }) => {
+	const user = useRecoilValue(userAtom);
+	const toast=useToast()
 	// const [posts, setPosts] = useRecoilState(postsAtom);
-	// const [isLiking, setIsLiking] = useState(false);
-	// const [isReplying, setIsReplying] = useState(false);
-	// const    [reply, setReply] = useState("");
+	const [post,setPost]=useState(post_)
+	const [liked, setLiked] = useState(post.likes.includes(user?._id));
+	const [isLiking, setIsLiking] = useState(false);
+	const [isReplying, setIsReplying] = useState(false);
+	const [reply, setReply] = useState("");
 
-	// const showToast = useShowToast();
-	// const { isOpen, onOpen, onClose } = useDisclosure();
+	const { isOpen, onOpen, onClose } = useDisclosure();
 
-	// const handleLikeAndUnlike = async () => {
-	// 	if (!user) return showToast("Error", "You must be logged in to like a post", "error");
-	// 	if (isLiking) return;
-	// 	setIsLiking(true);
-	// 	try {
-	// 		const res = await fetch("/api/posts/like/" + post._id, {
-	// 			method: "PUT",
-	// 			headers: {
-	// 				"Content-Type": "application/json",
-	// 			},
-	// 		});
-	// 		const data = await res.json();
-	// 		if (data.error) return showToast("Error", data.error, "error");
+	const handleLikeAndUnlike = async () => {
+		if (!user) {
+			toast({
+				title: 'Error',
+				description: 'Login to like the Post.',
+				status: 'error',
+				duration: 3000,
+				isClosable: true
+			  });
+		} 
+		if(isLiking)return
+		setIsLiking(true)
+		try {
+			const response=await axios.put(`http://localhost:4000/api/posts/like/${post._id}`,{},{
+				headers: {
+					'Accept': 'application/json',
+					'Content-Type': 'application/json'
+				  },
+				  withCredentials:true
+			})
+			if(response.data.error){
+				toast({
+					title: 'Error',
+					description: response.data.error,
+					status: 'error',
+					duration: 3000,
+					isClosable: true
+				  });
+				  return
+			}
+			if(!liked){
+				setPost({...post,likes:[...post.likes,user._id]})
+			}
+			else{
+				setPost({...post,likes:post.likes.filter(id=>id!==user._id)})
+			}
+			setLiked(!liked)
+		} 
+		
+		catch (error) {
+			toast({
+				title: 'Error',
+				description: error,
+				status: 'error',
+				duration: 3000,
+				isClosable: true
+			  });
+		} finally {
+			setIsLiking(false)
+		}
 
-	// 		if (!liked) {
-	// 			// add the id of the current user to post.likes array
-	// 			const updatedPosts = posts.map((p) => {
-	// 				if (p._id === post._id) {
-	// 					return { ...p, likes: [...p.likes, user._id] };
-	// 				}
-	// 				return p;
-	// 			});
-	// 			setPosts(updatedPosts);
-	// 		} else {
-	// 			// remove the id of the current user from post.likes array
-	// 			const updatedPosts = posts.map((p) => {
-	// 				if (p._id === post._id) {
-	// 					return { ...p, likes: p.likes.filter((id) => id !== user._id) };
-	// 				}
-	// 				return p;
-	// 			});
-	// 			setPosts(updatedPosts);
-	// 		}
+		}
+		
+	
 
-	// 		setLiked(!liked);
-	// 	} catch (error) {
-	// 		showToast("Error", error.message, "error");
-	// 	} finally {
-	// 		setIsLiking(false);
-	// 	}
-	// };
-
-	// const handleReply = async () => {
-	// 	if (!user) return showToast("Error", "You must be logged in to reply to a post", "error");
-	// 	if (isReplying) return;
-	// 	setIsReplying(true);
-	// 	try {
-	// 		const res = await fetch("/api/posts/reply/" + post._id, {
-	// 			method: "PUT",
-	// 			headers: {
-	// 				"Content-Type": "application/json",
-	// 			},
-	// 			body: JSON.stringify({ text: reply }),
-	// 		});
-	// 		const data = await res.json();
-	// 		if (data.error) return showToast("Error", data.error, "error");
-
-	// 		const updatedPosts = posts.map((p) => {
-	// 			if (p._id === post._id) {
-	// 				return { ...p, replies: [...p.replies, data] };
-	// 			}
-	// 			return p;
-	// 		});
-	// 		setPosts(updatedPosts);
-	// 		showToast("Success", "Reply posted successfully", "success");
-	// 		onClose();
-	// 		setReply("");
-	// 	} catch (error) {
-	// 		showToast("Error", error.message, "error");
-	// 	} finally {
-	// 		setIsReplying(false);
-	// 	}
-	// };
+	const handleReply = async () => {
+		if (!user) return showToast("Error", "You must be logged in to reply to a post", "error");
+		if (isReplying) return;
+		setIsReplying(true);
+		try {
+			const response=await axios.put(`http://localhost:4000/api/posts/reply/${post._id}`,{text:reply},{
+				headers: {
+					'Accept': 'application/json',
+					'Content-Type': 'application/json'
+				  },
+				  withCredentials:true
+			})
+			if(response.data.error){
+				toast({
+					title: 'Error',
+					description: response.data.error,
+					status: 'error',
+					duration: 3000,
+					isClosable: true
+				  });
+				  return
+			}
+			setPost({...post,replies:[...post.replies,response.data.message.text]});
+				console.log(response.data.message.text);
+				toast({
+					title: 'Success',
+					description: 'Reply Added',
+					duration: 3000,
+					isClosable: true
+				  });
+				  onClose()
+				  setReply("")
+		} 
+		
+		catch (error) {
+			toast({
+				title: 'Error',
+				description: error,
+				status: 'error',
+				duration: 3000,
+				isClosable: true
+			  });
+		} finally {
+			setIsReplying(false)
+		}
+	};
 
 	return (
 		<Flex flexDirection='column'>

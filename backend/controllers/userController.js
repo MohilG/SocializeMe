@@ -2,6 +2,7 @@
     import bcrypt from "bcryptjs"
     import generateTokenCookie from "../utils/helper/generateTokenCookie.js";
     import {v2 as cloudinary} from "cloudinary"
+import mongoose from "mongoose";
 //  import jwt from 'jsonwebtoken'
     export const signUp = async(req,res) => {
         // console.log(req.body);
@@ -153,10 +154,18 @@
     }
 
 export const getUser=async(req,res)=>{
-    const {username}=req.params
+    const {query}=req.params
+    // console.log((query));
     
     try {
-        const user=await User.findOne({username}).select("-password").select("-updatedAt")
+        let user;
+        if(mongoose.Types.ObjectId.isValid(query)){
+             user=await User.findOne({_id:query}).select("-password").select("-updatedAt")
+        }
+        else{
+             user=await User.findOne({username:query}).select("-password").select("-updatedAt")
+
+        }
 
         if(!user)return res.status(400).json({error:"User Not Found"})
 

@@ -1,20 +1,23 @@
-import { Button, Flex, useToast } from '@chakra-ui/react'
+import { Button, Flex, Spinner, useToast } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useRecoilValue } from 'recoil'
 import userAtom from '../atoms/userAtom.js'
 import axios from 'axios'
+import Post from '../components/Post.jsx'
 
 const HomePage = () => {
   const toast =useToast()
   const [posts,setPosts]=useState([])
-  const [loading,setLoading]=useState(false)
+  const [loading,setLoading]=useState(true)
   useEffect(()=>{
     const getFeed=async()=>{
       try {
         setLoading(true)
         const response=await axios.get('http://localhost:4000/api/posts',{withCredentials: true})
-        // console.log(response)
+        // console.log(response.data)
+        setPosts(response.data)
+        console.log(posts);
         if(response.data.error){
           toast({
             title: 'Error',
@@ -27,7 +30,7 @@ const HomePage = () => {
         else{
           toast({
             title: 'Success',
-            description: response.data.message,
+            description: 'Feed Updated',
             duration: 3000,
             isClosable: true
           });
@@ -46,15 +49,23 @@ const HomePage = () => {
     }
     getFeed()
   },[])
-  const username = JSON.parse(localStorage.getItem('userInfo')).username;
-  console.log(username);
   return (
-    <Link to={`/${username}`}>
-        <Flex w={"full"} justifyContent={"center"}>
-            <Button mx={"auto"}>Visit Profile Page</Button>
-        </Flex>
-    </Link>
+    <>
+   {loading && (
+    <Flex justify={'center'}>
+      <Spinner  size="xl" />
+    </Flex>
+   )}
+    {!loading && posts.length===0 && (
+      <Flex justifyContent={'center'}>
+        <h1>Follow some users to update feed.</h1>
+      </Flex>
+    )}
+    {posts.map((post)=>{
+      console.log(post.postedBy);
+      return <Post key={post._id}  post={post} />
+    })}
+    </>
   )
-}
-
+  }
 export default HomePage

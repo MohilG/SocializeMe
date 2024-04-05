@@ -3,7 +3,7 @@ import { followUnfollow, getUser, login, logout, signUp, updateUser } from "../c
 import protectRoute from "../middlewares/protectRoutes.js";
 
 const router=express.Router();
-router.get('/profile/:username',getUser)
+router.get('/profile/:query',getUser)
 router.post('/signUp',signUp)
 router.post('/login',login)
 router.post('/logout',logout)

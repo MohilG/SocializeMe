@@ -34,10 +34,12 @@ export const createPost=async(req,res)=>{
 
 export const getPost=async(req,res)=>{
     try {
+        // console.log(req.params.postId);
         const post=await Post.findById(req.params.postId)
         if(!post){
             return res.status(404).json({message:"Post Not Found"})
         }
+        // console.log(post);
         res.status(200).json(post)
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -51,14 +53,17 @@ export const deletePost=async(req,res)=>{
         if(post.postedBy.toString()!==req.user._id.toString())return res.status(400).json({message:"Unauthorized to delete post"})
 
         if(!post){
-            return res.status(404).json({message:"Post Not Found"})
+            return res.status(404).json({error:"Post Not Found"})
         }
-
+        if(post.img){
+            const imgId=post.profilePic.split("/").pop().split(".")[0]
+            await  cloudinary.uploader.destroy(imgId)
+        }
         await Post.findByIdAndDelete(req.params.postId)
         res.status(201).json({message:"Post deleted successfully"})
     } catch (error) {
-        res.status(500).json({ message: error.message });
-        console.log("Error in Deleting Post", error);   
+        res.status(500).json({ error: error.message+"Error in Deleting Post" });
+        // console.log("Error in Deleting Post", error);   
     }
 }
 
@@ -101,7 +106,7 @@ export const replyPost=async(req,res)=>{
         const reply={userId,text,userProfile,username}
     post.replies.push(reply)
     await post.save()
-    res.status(201).json({message:"Reply Added"+reply})
+    res.status(201).json({message:reply})
        
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -118,9 +123,24 @@ export const getFeed=async(req,res)=>{
     //    console.log(following);
         if(!user)return res.status(404).json({error:"User Not Found"})
             const posts=await Post.find({postedBy:{$in:following}}).sort({createdAt:-1})
-        res.status(200).json({message:"Feed  Loaded Successfully"+posts})
+        res.status(200).json(posts)
     } catch (error) {
         res.status(500).json({ error: error.message });
         console.log("Error in Getting Feed", error);   
+    }
+}
+
+export const getUserPost=async(req,res)=>{
+    const {username}=req.params
+    try {
+        const user=await User.findOne({username})
+        if(!user){
+            res.status(404).json({error:"User Not Found"})
+        }
+        const post=await Post.find({postedBy:user._id}).sort('-createdAt')
+        res.status(200).json(post)
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+        console.log("Error in Fetching User Posts", error);  
     }
 }

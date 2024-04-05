@@ -1,29 +1,111 @@
-import { Button, Divider, Flex, Text } from "@chakra-ui/react"
-import UserHeader from "../components/UserHeader"
-import UserPost from "../components/UserPost"
-import Comment from "../components/Comment"
+import { Avatar, Box, Button, Divider, Flex, Image, Spinner, Text, useToast } from "@chakra-ui/react";
+import Actions from "../components/Actions";
+import Comment from "../components/Comment.jsx";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { formatDistanceToNow } from "date-fns";
+import { DeleteIcon } from "@chakra-ui/icons";
+import axios from "axios";
+import useGetProfile from "../hooks/useGetProfile";
 
 const PostPage = () => {
-  return (
-    <div>        
-   <UserPost likes={200} replies={70} title={"Yello Post"} postImg='/post2.png' avatar={'/zuck-avatar.png'} username={'mark-zuck'} verified={true}/>
-   <Divider my={4} color={"gray.dark"}/>
-<Flex justifyContent={"space-between"} >
-  <Flex gap={2} alignItems={"center"}>
-    <Text fontSize={"2xl"}> 👋 </Text>
-    <Text  color={"gray.light"}>Like,Post and Reply</Text>
+    const { pid } = useParams();
+    const toast = useToast();
+    const { loading, user } = useGetProfile();
+    const [post, setPost] = useState(null);
 
-    <Button>
-      Get
-    </Button>
-  </Flex> 
+    useEffect(() => {
+        const getPost = async () => {
+            try {
+                const response = await axios.get(`http://localhost:4000/api/posts/${pid}`, { withCredentials: true });
+                console.log(response);
+                if (response.data.error) {
+                    toast({
+                        title: 'Error',
+                        description: response.data.error,
+                        status: 'error',
+                        duration: 3000,
+                        isClosable: true
+                    });
+                    return;
+                }
+                setPost(response.data);
+            } catch (error) {
+                toast({
+                    title: 'Error',
+                    description: error.message,
+                    status: 'error',
+                    duration: 3000,
+                    isClosable: true
+                });
+            }
+        };
+        getPost();
+    }, [pid, toast]);
 
-</Flex>
-<Divider my={4}/>
-<Comment username={"lalit"} likes={19} comment={"Nice Pic"} avatar={'/zack-avatar.png'} />
-<Comment username={"Galit"} likes={4} comment={"Nice   "} avatar={'https://bit.ly/dan-abraov'} />
-    </div>
-  )
-}
+    const handleDelete = async (e) => {
+        e.preventDefault();
+        try {
+            if (!window.confirm("Are you sure you want to delete the post?")) return;
+            const response = await axios.delete(`http://localhost:4000/api/posts/${post._id}`, { withCredentials: true });
+            if (response.data.error) {
+                console.log(response.data.error);
+                toast({
+                    title: 'Error',
+                    description: response.data.error,
+                    status: 'error',
+                    duration: 3000,
+                    isClosable: true
+                });
+                return;
+            }
+            toast({
+                title: 'Success',
+                description: response.data.message,
+                duration: 3000,
+                isClosable: true
+            });
+        } catch (error) {
+            console.log(error);
+            toast({
+                title: 'Error',
+                description: error.message,
+                status: 'error',
+                duration: 3000,
+                isClosable: true
+            });
+        }
+    };
 
-export default PostPage
+    if (loading) {
+        return (
+            <Flex justifyContent={"center"}>
+                <Spinner size={"xl"} />
+            </Flex>
+        );
+    }
+
+    if (!user) {
+        return (
+            <Flex justifyContent={"center"}>
+                <Text>No user found.</Text>
+            </Flex>
+        );
+    }
+
+    if (!post) {
+        return (
+            <Flex justifyContent={"center"}>
+                <Spinner size={"xl"} />
+            </Flex>
+        );
+    }
+
+    return (
+        <>
+            {/* Your post page JSX */}
+        </>
+    );
+};
+
+export default PostPage;

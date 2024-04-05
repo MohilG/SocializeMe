@@ -35,7 +35,7 @@ const UserPost = ({likes,replies,title,postImg,avatar,username,verified}) => {
                 </Box>
             </Flex>
         <Flex flex={1} alignItems={"start"} gap={2} flexDirection={"column"}>
-            <Flex justifyContent={"space-between"} w={"full"}>
+            <Flex justifyContent={"space-between        "} w={"full"}>
                 <Flex w={"full"} alignItems={"center"}>
                     <Text fontSize="sm" fontWeight={'bold'} >{username}</Text>
                    {verified && <Image src="/verified.png" w={4} h={4} ml={1}/>}

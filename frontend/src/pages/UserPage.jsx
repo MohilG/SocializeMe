@@ -4,43 +4,45 @@ import UserPost from "../components/UserPost.jsx";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import Post from "../components/Post.jsx";
+import useGetProfile from "../hooks/useGetProfile.js";
 
 const UserPage = () => {
   const toast = useToast();
-  const [user, setUser] = useState(null);
   const { username } = useParams();
-const [loading,setLoading]=useState(true)
+  const [posts,setPosts]=useState([])
+  const [fetchPost,setFetchPost]=useState(true)
+  const {user,loading}=useGetProfile()
   useEffect(() => {
-    const getUser = async () => {
+    
+    const getPost=async()=>{
+      setFetchPost(true)
       try {
-        const response = await axios.get(
-          `http://localhost:4000/api/users/profile/${username}`
-        );
-
-        if (response.data.error) {
-          toast({
-            title: "Error",
-            description: response.data.error,
-            duration: 3000,
-            isClosable: true,
-          });
-          return;
-        }
-        setUser(response.data);
+          const response=await axios.get(`http://localhost:4000/api/posts/user/${username}`,{withCredentials:true})
+          if(response.data.error){
+            toast({
+              title: "Error",
+              description: response.data.error,
+              duration: 3000,
+              isClosable: true,
+            });
+            return
+          }
+          setPosts(response.data)
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error Getting User Posts:", error);
+        setPosts([])
         toast({
           title: "Error",
-          description: "Error Fetching Data",
+          description: "Error Getting User Posts",
           duration: 3000,
           isClosable: true,
         });
       }finally{
-        setLoading(false)
+        setFetchPost(false)
       }
-    };
-
-    getUser();
+    }
+    getPost()
   }, [username]);
 
   // console.log(user);
@@ -64,33 +66,17 @@ const [loading,setLoading]=useState(true)
   return (
     <>
       <UserHeader user={user} />
-      <UserPost
-        likes={100}
-        replies={10}
-        title={"First Post"}
-        postImg="/post1.png"
-        avatar={"/zuck-avatar.png"}
-        username={"mark-zuck"}
-        verified={true}
-      />
-      <UserPost
-        likes={200}
-        replies={70}
-        title={"Yello Post"}
-        postImg="/post2.png"
-        avatar={"/zuck-avatar.png"}
-        username={"dark-zuck"}
-        verified={false}
-      />
-      <UserPost
-        likes={61}
-        replies={13}
-        title={"Jello Post"}
-        postImg="/post3.png"
-        avatar={"/zuck-avatar.png"}
-        username={"lark-zuck"}
-        verified={true}
-      />
+      {fetchPost && posts.length!==0 && (
+     <Flex justifyContent={'center'}>
+      <Spinner size={"xl"}/>
+     </Flex>
+    )}
+    {!fetchPost && posts.length!==0 && (
+      posts.map((post)=>{
+        return (<Post post={post} key={post._id}/>)
+        
+      })
+    )}
     </>
   );
 };

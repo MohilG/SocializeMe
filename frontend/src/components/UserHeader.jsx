@@ -24,7 +24,7 @@ import {
 
   const UserHeader = ({ user }) => {
     const curUser = useRecoilValue(userAtom);
-    const [following, setFollowing] = useState(user.followers.includes(curUser._id));
+    const [following, setFollowing] = useState(user.followers.includes(curUser?._id));
     const toast = useToast();
   
     const handlefollowUnfollow = async () => {
@@ -64,10 +64,10 @@ import {
           return;
         }
         if(following){
-            user.followers.pop(curUser._id)
+            user.followers.pop(curUser?._id)
         }
         else{
-            user.followers.push(curUser._id)
+            user.followers.push(curUser?._id)
         }
         setFollowing(!following);
       } catch (error) {
@@ -112,12 +112,12 @@ import {
               <Box>{user.profilePic && <Avatar name={user.name} src={user.profilePic} size={"xl"} />}</Box>
             </Flex>
             <Text>{user.bio}</Text>
-            {curUser._id === user._id && (
+            {curUser?._id === user._id && (
               <Link as={RouterLink} to={"/update"}>
                 <Button size={"sm"}>Update Profile</Button>
               </Link>
             )}
-            {curUser._id !== user._id && (
+            {curUser?._id !== user._id && (
              
                 <Button size={"sm"} onClick={handlefollowUnfollow}>
                   {following ? "Unfollow" : "Follow"}
