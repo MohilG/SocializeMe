@@ -2,7 +2,7 @@ import { Avatar, Box, Button, Divider, Flex, Image, Spinner, Text,Menu, MenuButt
 import Actions from "../components/Actions";
 import Comment from "../components/Comment.jsx";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
 import { DeleteIcon } from "@chakra-ui/icons";
 import { CgMoreO } from "react-icons/cg";
@@ -13,6 +13,7 @@ import userAtom from "../atoms/userAtom.js";
 import postsAtom from "../atoms/postAtom.js";
 
 const PostPage = () => {
+    const navigate=useNavigate()
     const curUser=useRecoilValue(userAtom)
     const { pid } = useParams();
     const toast = useToast();
@@ -124,7 +125,10 @@ const PostPage = () => {
         <>
             <Flex>
                 <Flex w={'full'} alignItems={'center'} gap={3}>
-                    <Avatar src={user.profilePic} name={user.name} size={'md'}/>
+                <Avatar cursor={"pointer"} size={"md"} color={"black"} name={user?.name} onClick={(e)=>{ 
+                        // e.preventDefault() 
+                        navigate(`/${user.username}`)
+                     }} src={user?.profilePic || 'https://avatar.iran.liara.run/public/boy'} />
                     <Flex>
                     <Text fontSize={'sm'} fontWeight={'bold'}>{user.username}</Text>
                     <Image src='/verified.png' w={4} h={4} ml={4}/>

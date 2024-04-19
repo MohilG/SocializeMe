@@ -66,9 +66,9 @@ const CreatePost = () => {
               isClosable: true,
             });
           } else {
-            if(username=user.username){
-            setPosts([response.data,...posts])
-            }
+            // if(username==user.username){
+            // setPosts([response.data,...posts])
+            // }
               
             onClose();
             toast({
