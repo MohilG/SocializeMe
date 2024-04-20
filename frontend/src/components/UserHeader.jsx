@@ -203,7 +203,7 @@ try {
                         <Divider/>
 
                            {curUser?._id === user._id && (
-                            <MenuItem bg={"gray.dark"} color={'white'} onClick={freezeAccount}>
+                            <MenuItem bg={"gray.dark"} color={'white'} >
                             <Link as={RouterLink} to={"/update"}>
                             Update Profile
                             </Link>

@@ -5,7 +5,7 @@ const generateTokenCookie=(userId,res)=>{
         expiresIn:'15d'
     })
     // console.log(token);
-    res.cookie("jwt",token,{httpOnly:false,maxAge:15*24*60*60*1000,sameSite: 'strict'})
+    res.cookie("jwt",token,{httpOnly:false,maxAge:15*24*60*60*1000,sameSite: 'strict',secure: process.env.NODE_ENV !== "development"})
     return token
 }
 
