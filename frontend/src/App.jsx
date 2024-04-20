@@ -13,7 +13,7 @@ import UpdateProfile from './pages/UpdateProfile.jsx'
 import CreatePost from './components/CreatePost.jsx'
 import SuggestedUsers from './components/SuggestedUsers.jsx'
 
-function App() {
+function  App() {
   const user=useRecoilValue(userAtom)
   const {pathname}=useLocation()
   return (
