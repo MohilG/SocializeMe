@@ -61,7 +61,7 @@ const HomePage = () => {
       return <Post key={post._id}  post={post} />
     })}
    </Box>
-   <Box flex={30}><SuggestedUsers/> </Box>
+   {/* <Box flex={30}><SuggestedUsers/> </Box> */}
     </Flex>
   )
   }

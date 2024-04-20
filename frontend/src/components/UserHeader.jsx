@@ -11,22 +11,26 @@ import {
     MenuItem,
     useToast,
     Button,
+    Divider,
   } from "@chakra-ui/react";
   import { Avatar } from "@chakra-ui/avatar";
   import { BsInstagram } from "react-icons/bs";
   import { CgMoreO } from "react-icons/cg";
   import { useRecoilValue } from "recoil";
   import userAtom from "../atoms/userAtom.js";
+
+
   import { Link as RouterLink } from "react-router-dom";
   import { useState } from "react";
   import axios from "axios";
+import useLogout from "../hooks/useLogOut.js";
   
 
   const UserHeader = ({ user }) => {
     const curUser = useRecoilValue(userAtom);
     const [following, setFollowing] = useState(user.followers.includes(curUser?._id));
     const toast = useToast();
-  
+    const handleLogOut=useLogout()
     const handlefollowUnfollow = async () => {
       try {
         if(!curUser){
@@ -80,6 +84,55 @@ import {
         });
       }
     };
+    const freezeAccount=async()=>{
+try {
+            if(!window.confirm("Are you sure you want to freeze your account?"))return
+            const response=await axios.post(`http://localhost:4000/api/users/freeze`,{},{
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+              },
+              withCredentials:true
+            });
+            // console.log(response);
+            if (response.data.error) {
+                console.log(response.data.error);
+                toast({
+                    title: 'Error',
+                    description: response.data.error,
+                    status: 'error',
+                    duration: 3000,
+                    isClosable: true
+                });
+                return;
+            }
+           
+            toast({
+              title: 'Success',
+              description: 'Account Frozen  Successfully!',
+              duration: 3000,
+              isClosable: true
+          });
+          await new Promise(resolve => setTimeout(resolve, 3000)); // Wait for 1 second (adjust as needed)
+
+          await handleLogOut();
+           
+
+            
+
+        } catch (error) {
+            console.log(error);
+            toast({
+                title: 'Error',
+                description: error.message ,
+                status: 'error',
+                duration: 3000,
+                isClosable: true
+            });
+          }
+
+
+    }
   
     const copyUrl = () => {
       const url = window.location.href;
@@ -96,27 +149,20 @@ import {
     return (
       <>
         {user ? (
-          <VStack gap={4} alignItems={"start"}>
+          <VStack gap={4} cursor={'pointer'} alignItems={"start"}>
             <Flex justifyContent={"space-between"} w={"full"}>
               <Box>
-                <Text fontSize={"5xl"} mr={3}>
+                <Text fontSize={"5xl"} mr={3} mb={2}>
                   {user.name}
                 </Text>
                 <Flex gap={2} alignItems={"center"}>
-                  <Text fontSize={"xl"}>{user.username}</Text>
-                  <Text fontSize={"xs"} color={"gray.light"} p={1} borderRadius={"full"} bg={"gray.dark"}>
-                    social.net
-                  </Text>
+                  <Text fontSize={"xl"}>@{user.username}</Text>
+                  
                 </Flex>
               </Box>
-              <Box>{user.profilePic && <Avatar name={user.name} src={user.profilePic} size={"xl"} />}</Box>
+              <Box><Avatar name={user.name} src={user?.profilePic || 'https://avatar.iran.liara.run/public/boy'} size={"xl"} /></Box>
             </Flex>
             <Text>{user.bio}</Text>
-            {curUser?._id === user._id && (
-              <Link as={RouterLink} to={"/update"}>
-                <Button size={"sm"}>Update Profile</Button>
-              </Link>
-            )}
             {curUser?._id !== user._id && (
              
                 <Button size={"sm"} onClick={handlefollowUnfollow}>
@@ -127,9 +173,9 @@ import {
   
             <Flex justifyContent={"space-between"} w={"full"}>
               <Flex gap={2} alignItems={"center"}>
-                <Text color={"gray.light"}>{user.followers.length}</Text>
+                <Text color={"gray.light"}>{user.followers.length} followers</Text>
                 <Box w={1} h={1} bg={"gray.light"} borderRadius={"full"}></Box>
-                <Link color={"gray.light"}>instagram.com</Link>
+                {/* <Link color={"gray.light"}>instagram.com</Link> */}
               </Flex>
               <Flex>
                 <Box className="icon-container">
@@ -142,9 +188,29 @@ import {
                     </MenuButton>
                     <Portal>
                       <MenuList bg={"gray.dark"}>
-                        <MenuItem bg={"gray.dark"} onClick={copyUrl}>
+                      <Divider/>
+
+                        <MenuItem bg={"gray.dark"} color={'white'} onClick={copyUrl}>
                           Copy Link
                         </MenuItem>
+                        <Divider/>
+                        {curUser?._id === user._id && (
+                            <MenuItem bg={"gray.dark"} color={'white'} onClick={freezeAccount}>
+                            Freeze Account
+                          </MenuItem>
+                          
+                                 )}
+                        <Divider/>
+
+                           {curUser?._id === user._id && (
+                            <MenuItem bg={"gray.dark"} color={'white'} onClick={freezeAccount}>
+                            <Link as={RouterLink} to={"/update"}>
+                            Update Profile
+                            </Link>
+                            </MenuItem>
+                          )}
+                        <Divider/>
+
                         {/* <MenuItem></MenuItem> */}
                       </MenuList>
                     </Portal>

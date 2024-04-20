@@ -14,7 +14,7 @@ const useGetProfile = () => {
           const response = await axios.get(
             `http://localhost:4000/api/users/profile/${username}`,{withCredentials: true}
           );
-  
+          console.log(response);
           if (response.data.error) {
             toast({
               title: "Error",
@@ -23,6 +23,10 @@ const useGetProfile = () => {
               isClosable: true,
             });
             return;
+          }
+          if(response.data.isFrozen){
+            setUser(null)
+              return
           }
           setUser(response.data);
         } catch (error) {

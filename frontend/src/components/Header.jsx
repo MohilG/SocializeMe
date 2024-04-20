@@ -5,10 +5,15 @@ import userAtom from '../atoms/userAtom.js'
 import { AiFillHome } from "react-icons/ai";
 import { RxAvatar } from "react-icons/rx";
 import { Link } from 'react-router-dom'
+import { FaUserFriends } from "react-icons/fa";
 
 const Header = () => {
-  const { colormode, toggleColorMode } = useColorMode()
+  const { colorMode, toggleColorMode } = useColorMode()
   const curUser = useRecoilValue(userAtom)
+  const handleToggleColorMode = () => {
+    
+    toggleColorMode(); // Make sure this function is being called when you expect it to be
+  };
   return (
       <>
       <Flex justifyContent={"center"} mt={6} mb={12}>
@@ -16,8 +21,8 @@ const Header = () => {
                   cursor={"pointer"}
                   alt={"logo"}
                   w={6}
-                  onClick={toggleColorMode}
-                  src={colormode === 'dark' ? '/light-logo.svg' : '/dark-logo.svg'}
+                  onClick={handleToggleColorMode}
+                  src={colorMode === 'dark' ? '/light-logo.svg' : '/dark-logo.svg'}
               />
           </Flex>
           <Flex justifyContent={"space-between"} mt={6} mb={12}>
@@ -32,6 +37,14 @@ const Header = () => {
                   <RxAvatar size={24} /> {/* Adjusted to use MdAccountCircle */}
               </Link>
           )}
+            
+          {curUser && (
+
+              <Link to={`/suggest`}>
+                    <FaUserFriends cursor={'pointer'} size={24}/>
+                </Link>
+          )}
+
                     </Flex>
 
       </>

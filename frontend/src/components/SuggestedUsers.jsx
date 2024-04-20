@@ -19,7 +19,7 @@ const SuggestedUsers = () => {
 				withCredentials: true
 	  
 			  });
-			  	console.log(response);
+			  	// console.log(response);
 			if (response.data.error) {
 			  toast({
 				title: 'Error',
@@ -49,7 +49,7 @@ const SuggestedUsers = () => {
 	  
   return (
     <>
-    <Text mb={4} fontWeight={'bold'}>
+    <Text mb={4} align={'center'} fontWeight={'bold'}>
         Suggested Users
         </Text>
         <Flex direction={'column'}>

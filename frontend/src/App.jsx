@@ -11,6 +11,7 @@ import userAtom from './atoms/userAtom.js'
 import LogOut from './components/LogOut.jsx'
 import UpdateProfile from './pages/UpdateProfile.jsx'
 import CreatePost from './components/CreatePost.jsx'
+import SuggestedUsers from './components/SuggestedUsers.jsx'
 
 function App() {
   const user=useRecoilValue(userAtom)
@@ -22,6 +23,7 @@ function App() {
   <Routes>
     <Route path='/' element={user?<HomePage/>:<Navigate to={"/auth"}/>}></Route>
     <Route path='/auth' element={!user?<AuthPage/>:<Navigate to={'/'}/>}></Route>
+    <Route path='/suggest' element={!user?<Navigate to={'/'}/>:<SuggestedUsers/>}></Route>
     <Route path='/update' element={user?<UpdateProfile/>:<Navigate to={'/auth'}/>}></Route>
     <Route
 						path='/:username'

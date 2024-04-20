@@ -5,9 +5,10 @@ export const createPost=async(req,res)=>{
     try {
         const {postedBy,title}=req.body
         let {img}=req.body
-        console.log(postedBy+ title);
+        // console.log(postedBy+ title);
         if(!postedBy || !title) return res.status(400).json({error:"Please enter all fields"})
         const user=await User.findById(postedBy);
+    // console.log(req.user + " " );
         if(!user)return  res.status(401).json({error:'User not found'});
         if(req.user._id.toString()!==user._id.toString()){
             return res.status(401).json({error:"Unauthorized to create post"})
@@ -114,21 +115,27 @@ export const replyPost=async(req,res)=>{
     }
 }
 
-export const getFeed=async(req,res)=>{
-    try {
-      
-       const userId=req.user._id
-       const user=await User.findById(userId)
-       let following=user.following
-    //    console.log(following);
-        if(!user)return res.status(404).json({error:"User Not Found"})
-            const posts=await Post.find({postedBy:{$in:following}}).sort({createdAt:-1})
-        res.status(200).json(posts)
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-        console.log("Error in Getting Feed", error);   
+    export const getFeed=async(req,res)=>{
+        try {
+        
+        const userId=req.user._id
+        const user=await User.findById(userId)
+        let following=user.following
+        //    console.log(following);
+            if(!user)return res.status(404).json({error:"User Not Found"})
+            if (!following || following.length === 0) {
+                const posts = await Post.find({}).sort({ createdAt: -1 }).limit(5);
+                return res.status(200).json(posts)
+            }
+            else{
+                const posts=await Post.find({postedBy:{$in:following}}).sort({createdAt:-1})
+                return res.status(200).json(posts)
+        }
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+            console.log("Error in Getting Feed", error);   
+        }
     }
-}
 
 export const getUserPost=async(req,res)=>{
     const {username}=req.params

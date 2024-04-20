@@ -29,7 +29,7 @@ import Post from "../model/postModel.js";
         if(newUser){
             generateTokenCookie(newUser._id,res)
 
-        res.status(201).json({_id:newUser._id,name:newUser.name,username:newUser.username,bio:newUser.bio,profilePic:newUser.profilePic,message:"SignUp Successfull"})
+        res.status(201).json({_id:newUser._id,name:newUser.name,username:newUser.username,bio:newUser.bio,profilePic:newUser.profilePic,isFrozen:false})
         }
         else{
         res.status(400).json({error: 'Invalid User Data !'})
@@ -53,10 +53,14 @@ import Post from "../model/postModel.js";
             if(!user || !isPassword){
                 return res.status(401).json({error:'Invalid Username or Password!'});
             }
+            if(user.isFrozen){
+                user.isFrozen=false
+                await user.save()
+            }
             generateTokenCookie(user._id,res)
             
         
-        res.status(201).json({_id:user._id,name:user.name,username:user.username,email:user.email,bio:user.bio,profilePic:user.profilePic,message:"Login Successfull"})
+        res.status(201).json({_id:user._id,name:user.name,username:user.username,email:user.email,bio:user.bio,profilePic:user.profilePic,isFrozen:user.isFrozen})
         
     
         } catch (error) {
@@ -184,6 +188,22 @@ import Post from "../model/postModel.js";
         }
    s };
   
+   export const freezeAccount=async(req,res)=>{
+    try {
+        const user=await User.findById(req.user._id)
+        if(!user){
+          return  res.status(401).json({msg:"User not found"})
+        }
+        user.isFrozen=true
+        
+        await user.save()
+        // console.log(user);
+        res.status(200).json({message: "Account has been frozen"})
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+        console.log("Error in Freezing Account:", error);
+    }
+   }
    export const getSuggestedUsers = async (req, res) => {
     try {
         const userId = req.user._id;
@@ -191,13 +211,13 @@ import Post from "../model/postModel.js";
 
         const users = await User.aggregate([
             {
-                "$match": { "_id": { "$ne": userId } }
+                "$match": { "_id": { "$ne": userId }, "isFrozen": false }
             },
             { $sample: { size: 10 } }
         ]);
         
         const filteredUsers = users.filter(user => !usersFollowedByYou.following.includes(user._id));
-        const suggestedUsers = filteredUsers.slice(0, 4);
+        const suggestedUsers = filteredUsers.slice(0, 8 );
         suggestedUsers.forEach(user => user.password = null);
         
         res.status(200).json(suggestedUsers);
@@ -206,6 +226,7 @@ import Post from "../model/postModel.js";
         console.log("Error in Suggested Users:", error);
     }
 }
+
 
     
 
