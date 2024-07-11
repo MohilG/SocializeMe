@@ -19,7 +19,7 @@ const SuggestedUsers = () => {
 				withCredentials: true
 	  
 			  });
-			  	// console.log(response);
+			  	console.log(response);
 			if (response.data.error) {
 			  toast({
 				title: 'Error',

@@ -27,16 +27,16 @@ const LogOut = () => {
             });
             window.location.href='/'
           } catch (error) {
-            console.log(error);
-            toast({
-                title: 'Error',
-                description: error.response.data.error,
-                status: 'error',
-                duration: 3000,
-                isClosable: true
-              });
-              return
-          }
+              console.log(error);
+              toast({
+                  title: 'Error',
+                  description: error.response.data.error,
+                  status: 'error',
+                  duration: 3000,
+                  isClosable: true
+                });
+                return
+            }
     }
   return (
     <Button position={"fixed"} top={"30px"} right={"30px"} size={"sm"} onClick={handleLogOut}>LogOut</Button>

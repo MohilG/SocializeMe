@@ -11,6 +11,7 @@ const usePreviewImage = () => {
         reader.onloadend=()=>{
             setImgUrl(reader.result)
         }
+        console.log('hello')
         reader.readAsDataURL(file)
     }
     else{

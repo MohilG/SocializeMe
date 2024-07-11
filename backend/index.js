@@ -6,11 +6,13 @@ import connectDB from "./db/connectDB.js";
 import userRoutes from './routes/userRoutes.js'
 import postRoutes from './routes/postRoutes.js'
 import {v2 as cloudinary} from "cloudinary"
+import { fileURLToPath } from 'url';
 import path from 'path'
-dotenv.config()
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);dotenv.config()
 const app=express()
-const PORT= 4000 || process.env.PORT
-const __dirname=path.resolve()
+const PORT=process.env.PORT || 4000 
+// const __dirname=path.resolve()
 cloudinary.config({
   cloud_name:process.env.CLOUDINARY_NAME,
   api_key:process.env.CLOUDINARY_API_KEY,
@@ -26,12 +28,12 @@ app.use(cookieParser())
 
 app.use('/api/users',userRoutes)
 app.use('/api/posts',postRoutes)
-
+// console.log(__dirname);
 // if(process.env.NODE_ENV==="production"){
-  app.use(express.static(path.join(__dirname,"/frontend/dist")))
-  app.get("*", (req,res)=>{
-      res.sendFile(path.resolve(__dirname,"frontend","dist","index.html"))
-})
+  app.use(express.static(path.join(__dirname,"../frontend/dist")))
+//   app.get("*", (req,res)=>{
+//       res.sendFile(path.resolve(__dirname,"frontend","dist","index.html"))
+// })
 // }
 app.listen(PORT,()=>{
     connectDB()

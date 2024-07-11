@@ -4,13 +4,13 @@ import jwt from "jsonwebtoken";
 
 const protectRoute=async(req,res,next)=>{
     try {
-        // console.log(req.cookies.jwt);
         const token = req.cookies.jwt; // Corrected cookie name to 'jwt'
+        // console.log(token);
         if (!token) return res.status(401).json({ message: "Unauthorized" });
         
         const decoded = jwt.verify(token, process.env.SECRET);
+        // console.log(decoded);
         const user = await User.findById(decoded.userId).select("-password");
-        
         // const user=await User.findById(decoded.userId).select("-password")
         req.user=user   
         next()
