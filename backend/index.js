@@ -19,7 +19,7 @@ cloudinary.config({
   api_secret:process.env.CLOUDINARY_API_SECRET
 })
 app.use(cors({
-    origin: 'http://localhost:3000',
+    origin: 'https://socializeme-3.onrender.com',
     credentials: true
   }));
 app.use(express.json({limit:'50mb'}))
