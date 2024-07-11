@@ -9,7 +9,7 @@ export default defineConfig({
   // root: './src',
   plugins: [react()],
   server:{
-    port:3000,
+    // port:3000,
     // proxy:{
     //   "/api":{
     //     target:"http://localhost:4000",
