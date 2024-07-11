@@ -72,7 +72,7 @@ import Post from "../model/postModel.js";
     export const logout=async(req,res)=>{
         try {
             console.log(res.cookie);       
-            res.cookie("jwt", "", { maxAge: 1 });
+            res.cookie("jwt", "", { maxAge: 15*24*60*60*1000 });
             res.status(200).json({ message: "User logged out successfully" });
         }  catch (error) {
             res.status(500).json({message: error.message})
