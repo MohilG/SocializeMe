@@ -29,7 +29,7 @@ export default function LoginCard() {
   const setUser=useSetRecoilState(userAtom)
   const handleLogin=async()=>{
     try {
-        const response = await axios.post('http://localhost:4000/api/users/login', inputs, {
+        const response = await axios.post('https://socializeme-2.onrender.com/api/users/login', inputs, {
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json'

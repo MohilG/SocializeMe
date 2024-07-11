@@ -47,7 +47,7 @@ const Actions = ({ post }) => {
 		if(isLiking)return
 		setIsLiking(true)
 		try {
-			const response=await axios.put(`http://localhost:4000/api/posts/like/${post._id}`,{},{
+			const response=await axios.put(`https://socializeme-2.onrender.com/api/posts/like/${post._id}`,{},{
 				headers: {
 					'Accept': 'application/json',
 					'Content-Type': 'application/json'
@@ -107,7 +107,7 @@ const Actions = ({ post }) => {
 		if (isReplying) return;
 		setIsReplying(true);
 		try {
-			const response=await axios.put(`http://localhost:4000/api/posts/reply/${post._id}`,{text:reply},{
+			const response=await axios.put(`https://socializeme-2.onrender.com/api/posts/reply/${post._id}`,{text:reply},{
 				headers: {
 					'Accept': 'application/json',
 					'Content-Type': 'application/json'

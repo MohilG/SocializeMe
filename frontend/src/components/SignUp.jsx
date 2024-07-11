@@ -31,7 +31,7 @@ export default function SignupCard() {
     const handleSignUp = async () => {
     //   console.log(JSON.stringify(inputs));
       try {
-        const response = await axios.post('http://localhost:4000/api/users/signUp', inputs, {
+        const response = await axios.post('https://socializeme-2.onrender.com/api/users/signUp', inputs, {
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json'

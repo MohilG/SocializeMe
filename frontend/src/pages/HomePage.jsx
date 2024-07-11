@@ -17,7 +17,7 @@ const HomePage = () => {
       try {
         setPosts([]);
         setLoading(true);
-        const response = await axios.get('http://localhost:4000/api/posts', { withCredentials: true });
+        const response = await axios.get('https://socializeme-2.onrender.com/api/posts', { withCredentials: true });
         setPosts(response.data);
         if (response.data.error) {
           toast({

@@ -32,7 +32,7 @@ export default function UpdateProfile() {
     const handleSubmit=async(e)=>{
             e.preventDefault()
             try {
-                const response=await axios.put(`http://localhost:4000/api/users/update/${user._id}`,{...inputs,profilePic: user.profilePic || imgUrl},{
+                const response=await axios.put(`https://socializeme-2.onrender.com/api/users/update/${user._id}`,{...inputs,profilePic: user.profilePic || imgUrl},{
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'

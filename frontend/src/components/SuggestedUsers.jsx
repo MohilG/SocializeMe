@@ -11,7 +11,7 @@ const SuggestedUsers = () => {
 		const getSuggestedUsers = async () => {
 		  try {
 			setLoading(true);
-			const response = await axios.post(`http://localhost:4000/api/users/suggested`, {}, {
+			const response = await axios.post(`https://socializeme-2.onrender.com/api/users/suggested`, {}, {
 				headers: {
 				  Accept: "application/json",
 				  "Content-Type": "application/json",

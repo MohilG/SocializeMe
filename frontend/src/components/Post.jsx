@@ -21,7 +21,7 @@ const Post = ({post}) => {
         e.preventDefault()
         try {
             if(!window.confirm("Are you sure you want to delete the post?"))return
-            const response=await axios.delete(`http://localhost:4000/api/posts/${post._id}`,{withCredentials:true});
+            const response=await axios.delete(`https://socializeme-2.onrender.com/api/posts/${post._id}`,{withCredentials:true});
             if (response.data.error) {
                 console.log(response.data.error);
                 toast({
@@ -71,7 +71,7 @@ const Post = ({post}) => {
                 // console.log(post);
                 // console.log(postedById);
     
-                const response = await axios.get(`http://localhost:4000/api/users/profile/${postedById}`, {}, {
+                const response = await axios.get(`https://socializeme-2.onrender.com/api/users/profile/${postedById}`, {}, {
                     headers: {
                       Accept: "application/json",
                       "Content-Type": "application/json",

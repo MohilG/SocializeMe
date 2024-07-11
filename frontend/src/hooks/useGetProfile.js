@@ -12,7 +12,7 @@ const useGetProfile = () => {
     const getUser = async () => {
         try {
           const response = await axios.get(
-            `http://localhost:4000/api/users/profile/${username}`,{withCredentials: true}
+            `https://socializeme-2.onrender.com/api/users/profile/${username}`,{withCredentials: true}
           );
           console.log(response);
           if (response.data.error) {

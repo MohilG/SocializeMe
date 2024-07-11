@@ -24,8 +24,8 @@ const SuggestedUser = ({ user }) => {
             });
       }
       // console.log(user.followers)
-      console.log(`http://localhost:4000/api/users/follow/${user._id}`);
-      const response = await axios.post(`http://localhost:4000/api/users/follow/${user._id}`, {}, {
+      console.log(`https://socializeme-2.onrender.com/api/users/follow/${user._id}`);
+      const response = await axios.post(`https://socializeme-2.onrender.com/api/users/follow/${user._id}`, {}, {
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",

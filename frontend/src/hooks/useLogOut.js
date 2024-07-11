@@ -9,7 +9,7 @@ const useLogout = () => {
     const setUser=useSetRecoilState(userAtom)
     const handleLogOut=async()=>{
         try {
-            const response = await axios.post('http://localhost:4000/api/users/logout',{}, {
+            const response = await axios.post('https://socializeme-2.onrender.com/api/users/logout',{}, {
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'

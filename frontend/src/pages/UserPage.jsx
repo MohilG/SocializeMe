@@ -20,7 +20,7 @@ const UserPage = () => {
     const getPost=async()=>{
       setFetchPost(true)
       try {
-          const response=await axios.get(`http://localhost:4000/api/posts/user/${username}`,{withCredentials:true})
+          const response=await axios.get(`https://socializeme-2.onrender.com/api/posts/user/${username}`,{withCredentials:true})
           if(response.data.error){
             toast({
               title: "Error",

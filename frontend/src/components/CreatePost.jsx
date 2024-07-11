@@ -46,7 +46,7 @@ const CreatePost = () => {
         setLoading(true)
         try {
           const response = await axios.post(
-            'http://localhost:4000/api/posts/create',
+            'https://socializeme-2.onrender.com/api/posts/create',
             { postedBy: user._id, title: postText, img: imgUrl || '' },
             {
               headers: {
